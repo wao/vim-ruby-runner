@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+BIN_PATH=File.dirname(File.realpath(__FILE__))+"/vimruby"
+
+require "pathname"
+
+top_path = ARGV[0] || Dir.pwd
+
+Pathname.new(top_path).find do |path|
+  if path.fnmatch("**test_*.rb") then
+    puts "Run minitest file: #{path}"
+    system( "#{BIN_PATH} #{path.relative_path_from(Pathname.pwd)}" )
+
+    puts "\n\n"
+  end
+end

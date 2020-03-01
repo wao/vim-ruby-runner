@@ -1,0 +1,27 @@
+#!/bin/sh
+# Command line utility for themis.vim
+# Version: 1.5.4
+# Author : thinca <thinca+vim@gmail.com>
+# License: zlib License
+
+: "${VIMRUBY_VIM:=vim}"
+: "${VIMRUBY_ARGS:=-e -s}"
+
+if ! type realpath >/dev/null 2>&1; then
+	realpath() {
+		# NOTE: use X to avoid "XSMP opening connection" message.
+		"${VIMRUBY_VIM}" -u NONE -i NONE -N -X -V1 -e -s --cmd "echon resolve(argv(0))" --cmd "echo ''" --cmd quit "$1" 2>&1
+	}
+fi
+
+: "${VIMRUBY_HOME:=$(dirname "$(dirname "$(realpath "$0")")")}"
+
+STARTUP_SCRIPT="${VIMRUBY_HOME}/macros/vimruby_startup.vim"
+if [ ! -f "${STARTUP_SCRIPT}" ]; then
+	echo '$VIMRUBY_HOME is not set up correctly.' >&2
+	exit 2
+fi
+
+"${VIMRUBY_VIM}" -u NONE -i NONE -n -N ${VIMRUBY_ARGS} --cmd "source ${STARTUP_SCRIPT}" -- "$@"
+# echo "${VIMRUBY_VIM}" -u NONE -i NONE -n -N ${VIMRUBY_ARGS} -- "$@"
+#"${VIMRUBY_VIM}" -u NONE -i NONE -n -N --cmd "source ${STARTUP_SCRIPT}" -- "$@"
