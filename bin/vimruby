@@ -4,7 +4,7 @@
 # Author : thinca <thinca+vim@gmail.com>
 # License: zlib License
 
-: "${VIMRUBY_VIM:=vim}"
+: "${VIMRUBY_VIM:=nvim}"
 : "${VIMRUBY_ARGS:=-e -s}"
 
 if ! type realpath >/dev/null 2>&1; then

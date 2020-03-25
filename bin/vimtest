@@ -4,13 +4,25 @@ BIN_PATH=File.dirname(File.realpath(__FILE__))+"/vimruby"
 
 require "pathname"
 
-top_path = ARGV[0] || Dir.pwd
-
-Pathname.new(top_path).find do |path|
+def run_path(path)
   if path.fnmatch("**test_*.rb") then
     puts "Run minitest file: #{path}"
-    system( "#{BIN_PATH} #{path.relative_path_from(Pathname.pwd)}" )
-
+    if !path.relative?
+      path = path.relative_path_from(Pathname.pwd)
+    end
+    cmd = "#{BIN_PATH} #{path}" 
+    puts cmd
+    system(cmd)
     puts "\n\n"
+  end
+end
+
+top_path = Pathname.new(ARGV[0] || Dir.pwd)
+
+if top_path.file?
+  run_path(top_path)
+else
+  Pathname.new(top_path).find do |path|
+    run_path(path)
   end
 end

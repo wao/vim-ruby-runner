@@ -51,14 +51,50 @@ function! s:dump_error(throwpoint, exception) abort
   endtry
 endfunction
 
+function s:fix_vim_ruby()
+ruby << __RUBY__
+class << $stdout 
+  alias :old_puts :puts
+  public def puts(arg="")
+  # VIM::evaluate("printf(\"%s\",\"#{arg}\\n\")") 
+    old_puts(arg)
+  end
+
+  alias :old_print :print
+  public def print(arg="")
+  #  VIM::evaluate("printf(\"%s\",\"#{arg}\")") 
+    old_print(arg)
+  end
+
+  public def sync=(*args)
+
+  end
+
+  public def sync(*args)
+
+  end
+__RUBY__
+end
+
+endfunction
+
+function s:run_minitest()
+  ruby << __RUBY__
+  require "pathname"
+  require "minitest"
+  argv = VIM::evaluate("argv()")[0]
+  if argv
+    load argv
+    MiniTest.run
+  end
+__RUBY__
+endfunction
+
 function! s:main() abort
     redir >> /dev/stdout
-    ruby require "pathname"
-    ruby require "minitest"
-    ruby argv = VIM::evaluate("argv()")[0]
-    ruby load argv if argv
-    ruby MiniTest.run if argv
+    call s:run_minitest()
     redir END
+
     exec "quit"
 endfunction
 
